@@ -15,17 +15,12 @@ const Post = mongoose.model("Post", new mongoose.Schema({
         default: Date.now
     },
     likes: [
-        new mongoose.Schema({
-            name: {
-                type: String,
-                required: true,
-                unique: true,
-                index: true,
-                sparse: true,
-                minlength: 5,
-                maxlength: 50
-            }
-        })
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User', 
+            index: true, 
+            sparse: true
+        }
     ]
 }));
 

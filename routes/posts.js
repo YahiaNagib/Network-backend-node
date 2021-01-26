@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     let user = await User.findById(req.body.id);
-    if(!user) return res.status(400).send('This user does not exist!');
+    if (!user) return res.status(400).send('This user does not exist!');
     let post = new Post({
         owner: user._id,
         content: req.body.content
@@ -24,5 +24,26 @@ router.post('/', async (req, res) => {
     res.send(post);
 
 });
+
+router.put('/', async (req, res) => {
+    const { id: postId, content } = req.body;
+    let post = await Post.findById(postId);
+    if (!post) return res.status(400).send('This post does not exist!');
+    post = await Post.findOneAndUpdate(
+        { _id: postId },
+        { $set: { content } },
+    );
+    res.send(post);
+});
+
+router.delete('/', async (req, res) => {
+    const postId = req.body.id;
+    let post = await Post.findById(postId);
+    if (!post) return res.status(400).send('This post does not exist!');
+
+    post = await Post.deleteOne({_id: postId});
+    res.send(post);
+});
+
 
 module.exports = router;
