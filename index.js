@@ -3,11 +3,12 @@ const express = require('express');
 const app = express();
 const posts = require("./routes/posts");
 const users = require("./routes/users");
+const follow = require("./routes/follow");
 
 const { User } = require("./models/users");
 const { Post } = require("./models/posts");
 
-mongoose.connect("mongodb://localhost/networkDB", { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
+mongoose.connect("mongodb://localhost/networkDB", { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify:false })
     .then(() => { console.log("Connected") })
     .catch((error) => { console.log("Error", error) });
 
@@ -15,6 +16,7 @@ mongoose.connect("mongodb://localhost/networkDB", { useNewUrlParser: true, useUn
 app.use(express.json());
 app.use('/api/posts', posts);
 app.use('/api/users', users);
+app.use('/api/follow', follow);
 
 // let user = new User({
 //     name: "yahia",

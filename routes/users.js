@@ -7,4 +7,16 @@ router.get('/', async (req, res) => {
     res.send(users);
 });
 
+router.post('/', async (req, res) => {
+
+    const { name, email, password } = req.body;
+    let user = new User({
+        name, email, password
+    });
+
+    user = await user.save();
+    res.send(user);
+
+});
+
 module.exports = router;

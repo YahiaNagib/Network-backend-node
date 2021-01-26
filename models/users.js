@@ -23,10 +23,24 @@ const userSchema = new mongoose.Schema({
     },
     joinDate: {
         type: Date,
-        default: new Date()
+        default: Date.now
     },
-    // following: { type: mongoose.Schema.ObjectId, ref: 'User' },
-    // followers: { type: mongoose.Schema.ObjectId, ref: 'User' }
+    following: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User', 
+            index: true, 
+            sparse: true
+        }
+    ],
+    followers: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User', 
+            index: true, 
+            sparse: true
+        }
+    ]
 });
 
 const User = mongoose.model("User", userSchema);
