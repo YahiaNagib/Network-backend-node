@@ -4,6 +4,7 @@ const app = express();
 const posts = require("./routes/posts");
 const users = require("./routes/users");
 const follow = require("./routes/follow");
+const unfollow = require("./routes/unfollow");
 
 const { User } = require("./models/users");
 const { Post } = require("./models/posts");
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use('/api/posts', posts);
 app.use('/api/users', users);
 app.use('/api/follow', follow);
+app.use('/api/unfollow', unfollow);
 
 // let user = new User({
 //     name: "yahia",
