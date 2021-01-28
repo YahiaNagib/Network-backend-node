@@ -1,10 +1,21 @@
 const mongoose = require("mongoose");
 
 const Post = mongoose.model("Post", new mongoose.Schema({
-    owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
+    user: {
+        type: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true,
+                minlength: 5,
+                maxlength: 50
+            },
+            email: {
+                type: String,
+                required: true,
+                minlength: 5,
+                maxlength: 50
+            }
+        })
     },
     content: {
         type: String,
@@ -17,8 +28,8 @@ const Post = mongoose.model("Post", new mongoose.Schema({
     likes: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User', 
-            index: true, 
+            ref: 'User',
+            index: true,
             sparse: true
         }
     ]

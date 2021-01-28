@@ -52,7 +52,11 @@ router.post('/', auth, async (req, res) => {
     let user = await User.findById(req.user._id);
     if (!user) return res.status(400).send('This user does not exist!');
     let post = new Post({
-        owner: user._id,
+        user: {
+            _id: user._id,
+            name: user.name,
+            email: user.email
+        },
         content: req.body.content
     });
 

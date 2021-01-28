@@ -1,26 +1,31 @@
 const mongoose = require("mongoose");
 const express = require('express');
-const app = express();
 const posts = require("./routes/posts");
 const users = require("./routes/users");
 const follow = require("./routes/follow");
-const unfollow = require("./routes/unfollow");
 const like = require("./routes/like");
 const auth = require("./routes/auth");
+const app = express();
 
 const { User } = require("./models/users");
 const { Post } = require("./models/posts");
 
-mongoose.connect("mongodb://localhost/networkDB", { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify:false })
+mongoose.connect("mongodb://localhost/networkDB", { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false })
     .then(() => { console.log("Connected") })
     .catch((error) => { console.log("Error", error) });
 
 
 app.use(express.json());
+
+app.all('*', function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next();
+});
+
 app.use('/api/posts', posts);
 app.use('/api/users', users);
 app.use('/api/follow', follow);
-app.use('/api/unfollow', unfollow);
 app.use('/api/like', like);
 app.use('/api/auth', auth);
 
