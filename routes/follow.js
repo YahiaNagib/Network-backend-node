@@ -19,17 +19,29 @@ router.put('/', auth, async (req, res) => {
     let user2 = await User.findById(id2);
     if (!user1 || !user2) return res.status(400).send('One of the user does not exist!');
 
-    if (user1.following.includes(id2)) return res.status(400).send("Already followed!");
+    if (user1.following.includes(id2)) {
+        user1 = await User.findOneAndUpdate(
+            { _id: id1 },
+            { $pull: { following: id2 } },
+        );
+    
+        user2 = await User.findOneAndUpdate(
+            { _id: id2 },
+            { $pull: { followers: id1 } },
+        );
+    }
+    else {
+        user1 = await User.findOneAndUpdate(
+            { _id: id1 },
+            { $push: { following: id2 } },
+        );
+    
+        user2 = await User.findOneAndUpdate(
+            { _id: id2 },
+            { $push: { followers: id1 } },
+        );
+    }
 
-    user1 = await User.findOneAndUpdate(
-        { _id: id1 },
-        { $push: { following: id2 } },
-    );
-
-    user2 = await User.findOneAndUpdate(
-        { _id: id2 },
-        { $push: { followers: id1 } },
-    );
 
     res.send(user1);
 
