@@ -3,8 +3,7 @@ const _ = require("lodash");
 const bycrpt = require("bcrypt");
 const { User } = require("../models/users")
 const router = express.Router();
-const jwt = require("jsonwebtoken");
-const { privateKey } = require("./token");
+
 
 router.get('/', async (req, res) => {
     const users = await User.find();
@@ -23,12 +22,14 @@ router.post('/', async (req, res) => {
 
     user = await user.save();
 
-    user = _.pick(user, ['_id', 'name', 'email']);
+    const token = user.generateAuthToken();
 
-    const token = jwt.sign({ _id: user._id }, privateKey);
+    user = _.pick(user, ['_id', 'name', 'email']);
 
     res.header("x-auth-token", token).send(user);
 
 });
+
+
 
 module.exports = router;
