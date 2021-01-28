@@ -1,5 +1,6 @@
 const express = require("express");
-const { User } = require("../models/users")
+const { User } = require("../models/users");
+const auth = require("../middleware/auth");
 const router = express.Router();
 
 
@@ -10,7 +11,7 @@ const router = express.Router();
 // add id2 to the following list of id1 IFF they do not already exist in this list
 // then add id1 to the follower list of id2 
 
-router.put('/', async (req, res) => {
+router.put('/', auth, async (req, res) => {
 
     const { id1, id2 } = req.body;
     if (id1 === id2) return res.status(400).send("users can't follow themselves!");

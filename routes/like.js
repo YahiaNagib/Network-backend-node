@@ -1,12 +1,13 @@
 const express = require("express");
 const { User } = require("../models/users");
 const { Post } = require("../models/posts");
+const auth = require("../middleware/auth");
 const router = express.Router();
 
 
 // this route accepts 2 parameters post id and id of the user liking/unliking the post
 // first check if both the post and the user exist in the database
-router.put("/", async (req, res) => {
+router.put("/", auth, async (req, res) => {
 
     const { postId, userId } = req.body;
     let post = await Post.findById(postId);

@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const { User } = require("../models/users")
 const { Post } = require("../models/posts")
+const auth = require("../middleware/auth");
 const router = express.Router();
 
 // get all the posts
@@ -46,8 +47,9 @@ router.get('/following/:id', async (req, res) => {
 // first check if the user exists
 // then add the post
 
-router.post('/', async (req, res) => {
-    let user = await User.findById(req.body.id);
+router.post('/', auth, async (req, res) => {
+
+    let user = await User.findById(req.user._id);
     if (!user) return res.status(400).send('This user does not exist!');
     let post = new Post({
         owner: user._id,
@@ -59,11 +61,12 @@ router.post('/', async (req, res) => {
 
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     const { id: postId } = req.params
     const { content } = req.body;
     let post = await Post.findById(postId);
     if (!post) return res.status(400).send('This post does not exist!');
+    if (!post.owner.equals(req.user._id)) return res.status(403).send('You can not change this post!');
     post = await Post.findOneAndUpdate(
         { _id: postId },
         { $set: { content } },
@@ -71,14 +74,13 @@ router.put('/:id', async (req, res) => {
     res.send(post);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     const postId = req.params.id;
     let post = await Post.findById(postId);
     if (!post) return res.status(400).send('This post does not exist!');
-
+    if (!post.owner.equals(req.user._id)) return res.status(403).send('You can not delete this post!');
     post = await Post.deleteOne({ _id: postId });
     res.send(post);
 });
-
 
 module.exports = router;
