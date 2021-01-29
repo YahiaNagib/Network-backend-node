@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const { privateKey } = require("../token");
 
 const userSchema = new mongoose.Schema({
-    name: {
+    username: {
         type: String,
         required: true,
         unique: true,
@@ -30,23 +30,24 @@ const userSchema = new mongoose.Schema({
     following: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User', 
-            index: true, 
+            ref: 'User',
+            index: true,
             sparse: true
         }
     ],
     followers: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User', 
-            index: true, 
+            ref: 'User',
+            index: true,
             sparse: true
         }
     ]
 });
 
-userSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({ _id: this._id }, privateKey);
+userSchema.methods.generateAuthToken = function () {
+    const { _id, username } = this;
+    const token = jwt.sign({ _id, username }, privateKey);
     return token;
 }
 

@@ -7,14 +7,15 @@ const router = express.Router();
 
 // get all the posts
 router.get('/', async (req, res) => {
-    const posts = await Post.find();
+    const posts = await Post.find().sort('-date');
     res.send(posts);
 });
 
 // get all the posts of a certain user
 router.get('/user/:id', async (req, res) => {
     const { id: userId } = req.params;
-    const posts = await Post.find({ owner: userId });
+    const user = await User.findById(userId);
+    const posts = await Post.find({ user });
     res.send(posts);
 });
 
@@ -54,7 +55,7 @@ router.post('/', auth, async (req, res) => {
     let post = new Post({
         user: {
             _id: user._id,
-            name: user.name,
+            username: user.username,
             email: user.email
         },
         content: req.body.content
