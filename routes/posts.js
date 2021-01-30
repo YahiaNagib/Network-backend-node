@@ -4,6 +4,7 @@ const { User } = require("../models/users")
 const { Post } = require("../models/posts")
 const auth = require("../middleware/auth");
 const router = express.Router();
+const _ = require("lodash");
 
 // get all the posts
 router.get('/', async (req, res) => {
@@ -36,12 +37,12 @@ router.get('/following/:id', async (req, res) => {
 
     // use regular for loop instead of foreach (Asynchronous/Promise issue)
     // https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop
-    for (let user of followedUsers) {
-        const userPosts = await Post.find({ owner: mongoose.Types.ObjectId(user) });
+    for (let userId of followedUsers) {
+        const userPosts = await Post.find({ "user._id": mongoose.Types.ObjectId(userId) });
         posts.push(...userPosts);
     }
 
-    res.send(posts);
+    res.send(_.orderBy(posts, "date", ['desc']));
 });
 
 
@@ -71,7 +72,7 @@ router.put('/:id', auth, async (req, res) => {
     const { content } = req.body;
     let post = await Post.findById(postId);
     if (!post) return res.status(400).send('This post does not exist!');
-    if (!post.owner.equals(req.user._id)) return res.status(403).send('You can not change this post!');
+    if (!post.owner.equals(req.user._id)) return res.status(403).send('You cannot edit this post!');
     post = await Post.findOneAndUpdate(
         { _id: postId },
         { $set: { content } },

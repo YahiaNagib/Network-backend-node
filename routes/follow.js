@@ -14,6 +14,7 @@ const router = express.Router();
 router.put('/', auth, async (req, res) => {
 
     const { id1, id2 } = req.body;
+    if (req.user._id !== id1) return res.status(403).send("Cannot perform this operation");
     if (id1 === id2) return res.status(400).send("users can't follow themselves!");
     let user1 = await User.findById(id1);
     let user2 = await User.findById(id2);
