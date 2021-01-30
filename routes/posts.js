@@ -72,7 +72,7 @@ router.put('/:id', auth, async (req, res) => {
     const { content } = req.body;
     let post = await Post.findById(postId);
     if (!post) return res.status(400).send('This post does not exist!');
-    if (!post.owner.equals(req.user._id)) return res.status(403).send('You cannot edit this post!');
+    if (!post.user._id.equals(req.user._id)) return res.status(403).send('You cannot edit this post!');
     post = await Post.findOneAndUpdate(
         { _id: postId },
         { $set: { content } },
