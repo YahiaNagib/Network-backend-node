@@ -21,9 +21,13 @@ router.get('/user/:id', async (req, res) => {
 });
 
 // get all the posts of users who a certain user follows
-router.get('/following/:id', async (req, res) => {
+router.get('/following/:id',auth, async (req, res) => {
     const { id: userId } = req.params;
-    // first get all the followed users 
+
+    // check if the authenticated user is the same as userId else return 403 
+    if (req.user._id !== userId) return res.status(403).send("Cannot perform this operation");
+
+    // get all the followed users 
     const { following: followedUsers } = await User.findOne({ _id: userId });
 
     let posts = [];
@@ -42,13 +46,13 @@ router.get('/following/:id', async (req, res) => {
         posts.push(...userPosts);
     }
 
+    // order the posts descendingly by date
     res.send(_.orderBy(posts, "date", ['desc']));
 });
 
-
+// Add post route
 // first check if the user exists
 // then add the post
-
 router.post('/', auth, async (req, res) => {
 
     let user = await User.findById(req.user._id);
@@ -67,12 +71,19 @@ router.post('/', auth, async (req, res) => {
 
 });
 
+// Edit post route
 router.put('/:id', auth, async (req, res) => {
     const { id: postId } = req.params
     const { content } = req.body;
+
+    // check if the post is in the database
     let post = await Post.findById(postId);
     if (!post) return res.status(400).send('This post does not exist!');
+
+    // check that the authenticated user is the owner of the post
     if (!post.user._id.equals(req.user._id)) return res.status(403).send('You cannot edit this post!');
+
+    // find the post and update it
     post = await Post.findOneAndUpdate(
         { _id: postId },
         { $set: { content } },
@@ -80,10 +91,15 @@ router.put('/:id', auth, async (req, res) => {
     res.send(post);
 });
 
+// Delete post route
 router.delete('/:id', auth, async (req, res) => {
     const postId = req.params.id;
+    // check if the post is in the database
+
     let post = await Post.findById(postId);
     if (!post) return res.status(400).send('This post does not exist!');
+
+    // check that the authenticated user is the owner of the post
     if (!post.owner.equals(req.user._id)) return res.status(403).send('You can not delete this post!');
     post = await Post.deleteOne({ _id: postId });
     res.send(post);

@@ -2,6 +2,13 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const { privateKey } = require("../token");
 
+// User model contains:
+    // username
+    // email
+    // password
+    // join date
+    // following: array of userIds who this user follows
+    // followers: array of userIds of users who follow this user
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -45,6 +52,8 @@ const userSchema = new mongoose.Schema({
     ]
 });
 
+// This method is used to convert the id and username to jwt
+// which is used in registeration and login routes
 userSchema.methods.generateAuthToken = function () {
     const { _id, username } = this;
     const token = jwt.sign({ _id, username }, privateKey);
